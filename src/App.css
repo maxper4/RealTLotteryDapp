@@ -20,12 +20,16 @@ h1 {
   text-align: start;
 }
 
+.about {
+  color: white;
+}
+
 .header {
   z-index: 10;
   width: 100%;
   position: fixed;
   top: 0px;
-  background-color: white;
+  background-color: rgb(39, 55, 85);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
@@ -62,7 +66,7 @@ h1 {
   border-radius: 50px;
   padding: 0.5em;
   border: 4px solid rgb(21, 108, 171);
-  background-color: white;
+  background-color: rgb(39, 55, 85);
   color: rgb(21, 108, 171);
   font-weight: 800;
   font-size: 0.8em;
@@ -96,7 +100,7 @@ section {
   flex-direction: column;
   justify-content: space-around;
   align-items: flex-start;
-  background-color: white;
+  background-color: rgb(39, 55, 85);
   padding: 1em;
 }
 
@@ -107,13 +111,18 @@ section {
 }
 
 .token {
+  color: white;
   position: relative;
-  background-color: white;
+  background-color: rgb(39, 55, 85);
   box-shadow: 0px 2px 12px 1px rgba(0, 0, 0, 0.3);
   background-image: url(./assets/bg.jpg);
   background-position: bottom center;
   background-blend-mode: multiply;
   padding: 0;
+}
+
+.prize > .btn-blue {
+  background-color: rgb(229, 238, 255);
 }
 
 .btn-blue {
@@ -122,7 +131,7 @@ section {
   min-width: 100px;
   padding: 0.5em;
   border: 4px solid rgb(21, 108, 171);
-  background-color: white;
+  background-color: rgb(39, 55, 85);
   color: rgb(21, 108, 171);
   font-weight: bold;
   font-size: 1em;
@@ -239,8 +248,9 @@ section {
 }
 
 .footer {
+  color: white;
   padding: 2em;
-  background-color: white;
+  background-color: rgb(39, 55, 85);
 }
 
 .footerText {
