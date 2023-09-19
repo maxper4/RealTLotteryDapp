@@ -8,7 +8,11 @@ function Lottery() {
         <section className="prize">
             <h1>This week's prize: XXXX$</h1>
 
-            <button className="btn-blue">ENTER THE LOTTERY</button>
+            <div>
+              <button className="btn-blue">DRAW</button>
+              <button className="btn-blue">CLAIM</button>
+              <button className="btn-blue">HISTORY</button>
+            </div>
         </section>
       </>
     )

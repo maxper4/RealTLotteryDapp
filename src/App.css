@@ -11,8 +11,12 @@ button {
   cursor: pointer;
 }
 
-p {
+.about p {
   text-align: start;
+}
+
+p {
+  text-align: center;
   margin: 1em;
 }
 
@@ -56,6 +60,7 @@ h1 {
   max-width: 50%;
   margin-right: 1em;
   margin-top: 0.5em;
+  padding-bottom: 0.5em;
 }
 
 .logoWrap > img {
@@ -121,7 +126,7 @@ section {
   padding: 0;
 }
 
-.prize > .btn-blue {
+.prize .btn-blue {
   background-color: rgb(229, 238, 255);
 }
 
