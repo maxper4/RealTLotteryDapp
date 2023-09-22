@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { shortenAddress, useLookupAddress } from "@usedapp/core";
 
 function WalletButton(props) {
   const [rendered, setRendered] = useState("");
 
-  const { ens } = useLookupAddress();
+  const shortenAddress = (address, chars = 4) => {
+    return `${address.substring(0, chars + 2)}...${address.substring(
+      42 - chars
+    )}`;
+  };
 
   useEffect(() => {
-    if (ens) {
-      setRendered(ens);
-    } else if (props.account) {
+    if (props.account) {
       setRendered(shortenAddress(props.account));
     } else {
       setRendered("");
     }
-  }, [props.account, ens, setRendered]);
+  }, [props.account]);
 
   return (
     <button

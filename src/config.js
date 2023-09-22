@@ -1,10 +1,3 @@
-import { Goerli } from "@usedapp/core";
-import { getDefaultProvider } from 'ethers'
-
-export const DAPP_CONFIG = {
-  readOnlyChainId: Goerli.chainId,
-  readOnlyUrls: {
-    [Goerli.chainId]:
-    getDefaultProvider('goerli'),
-  },
-};
+export const CONTRACT_ADDRESS = '0x182dD618C81e7b1DaFC83f91857eD6c1D35dC1B6';
+export const CHAIN_ID = '5';
+export const CHAIN_ID_HEX = '0x5';
