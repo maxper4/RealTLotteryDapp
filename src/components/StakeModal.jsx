@@ -10,7 +10,7 @@ function StakeModal(props) {
     { label: "$RealT", value: "$RealT" },
   ];
 
-  const [value, setValue] = useState("fruit");
+  const [value, setValue] = useState(options[0].value);
 
   const handleChange = (event) => {
     setValue(event.target.value);

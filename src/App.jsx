@@ -8,8 +8,9 @@ import Token from "./components/Token";
 import Footer from "./components/Footer";
 import WalletButton from "./components/WalletButton";
 
-function App() {
-  const { account, activateBrowserWallet, deactivate } = useEthers();
+function App({ expectedChainId }) {
+  const { account, activateBrowserWallet, deactivate, chainId, switchNetwork } = useEthers();
+
   return (
     <>
       <Header
@@ -29,14 +30,19 @@ function App() {
                 deactivate={deactivate}
               />
             </div>
-          )}
+            ) || (chainId != expectedChainId
+                && <div className="acc-connection">
+                  <h1>INCORRECT CHAIN</h1>
+                  <button className="btn-blue" onClick={() => switchNetwork(expectedChainId)}>Switch to correct network</button>
+                  </div>
+              )
+            }
           <Token
             account={account}
             activateBrowserWallet={activateBrowserWallet}
             deactivate={deactivate}
           />
 
-          <div className="placeholder"></div>
           <Lottery />
         </div>
         <Footer />

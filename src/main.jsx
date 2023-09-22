@@ -8,7 +8,7 @@ import "./index.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <DAppProvider config={DAPP_CONFIG}>
+    <DAppProvider config={DAPP_CONFIG} expectedChainId={DAPP_CONFIG.readOnlyChainId}>
       <App />
     </DAppProvider>
   </React.StrictMode>

@@ -4,6 +4,8 @@ import StakeModal from "./StakeModal";
 
 function Token() {
   const [ShowStakeModal, setShowStakeModal] = useState(false);
+  const [ShowUnstakeModal, setShowUnstakeModal] = useState(false);
+  const [ShowEnterLotteryModal, setShowEnterLotteryModal] = useState(false);
 
   return (
     <>
@@ -14,20 +16,22 @@ function Token() {
             <p>To enter the lottery, you need to buy $RealT properties first.</p>
             <div>
               <h2>BUY $REALT on:</h2>
-              <a
-                href="https://realt.co/marketplace"
-                target="blank_"
-                className="btn-blue"
-              >
-                REALT.CO
-              </a>
-              <a
-                href="https://yam.realtoken.network"
-                target="blank_"
-                className="btn-blue"
-              >
-                YAM
-              </a>
+              <div className="list-links">
+                <a
+                  href="https://realt.co/marketplace"
+                  target="blank_"
+                  className="btn-blue"
+                >
+                  REALT.CO
+                </a>
+                <a
+                  href="https://yam.realtoken.network"
+                  target="blank_"
+                  className="btn-blue"
+                >
+                  YAM
+                </a>
+              </div>
             </div>
             
           </div>
@@ -42,20 +46,23 @@ function Token() {
             <div>
               <button
                 className="btn-blue"
-                onClick={() => setShowStakeModal(!ShowStakeModal)}
+                onClick={() => { setShowStakeModal(true); setShowUnstakeModal(false); setShowEnterLotteryModal(false); }}
               >
                 STAKE $REALT
               </button>
               <button
                 className="btn-blue"
-                onClick={() => setShowStakeModal(!ShowStakeModal)}
+                onClick={() => {setShowUnstakeModal(true); setShowStakeModal(false); setShowEnterLotteryModal(false);}}
               >
                 UNSTAKE $REALT
               </button>
             </div>
           </div>
           {ShowStakeModal && (
-            <StakeModal close={() => setShowStakeModal(!ShowStakeModal)} />
+            <StakeModal close={() => setShowStakeModal(false)} />
+          )}
+          {ShowUnstakeModal && (
+            <StakeModal close={() => setShowUnstakeModal(false)} />
           )}
         </div>
         <div className="wrap">
@@ -67,13 +74,13 @@ function Token() {
             </p>
             <button
               className="btn-blue"
-              onClick={() => setShowStakeModal(!ShowStakeModal)}
+              onClick={() => {setShowEnterLotteryModal(true); setShowStakeModal(false); setShowUnstakeModal(false);} }
             >
               ENTER LOTTERY
             </button>
           </div>
-          {ShowStakeModal && (
-            <StakeModal close={() => setShowStakeModal(!ShowStakeModal)} />
+          {ShowEnterLotteryModal && (
+            <StakeModal close={() => setShowEnterLotteryModal(false)} />
           )}
         </div>
       </section>
