@@ -151,6 +151,7 @@ function App() {
   
   useEffect(() => {
     checkNetwork();
+    checkIfWalletIsConnected();
     if(window.ethereum)
     {
       window.ethereum.on("chainChanged", networkChanged);
