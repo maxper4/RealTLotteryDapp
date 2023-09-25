@@ -9,12 +9,24 @@ function Token({ contract }) {
   const [supportedTokens, setSupportedTokens] = useState([]);
 
   const loadSupportedTokens = async () => {
-    const supportedTokens = await contract.tokensSupported();
+    const supportedTokens = await contract.getTokensSupported();
     setSupportedTokens(supportedTokens);
   };
 
-  useEffect(() => {
+  const checkApproved = async (elem) => {
+    // instantiate contract for $REALT
+    
+    // approve if not already done
+    return approved;
+  };
 
+  const onClickStake = async(elem, amount) => {
+    alert("stake " + elem + " x" + amount);
+    await checkApproved(elem);
+    await contract.enter([elem], [amount]); // TODO: /!\ $REALT are ERC20, not ERC721
+  };
+
+  useEffect(() => {
     if (contract) {
       loadSupportedTokens();
     }
@@ -72,7 +84,9 @@ function Token({ contract }) {
             </div>
           </div>
           {ShowStakeModal && (
-            <Modal title="Stake $RealT" actionTxt="STAKE" close={() => setShowStakeModal(false)} list={supportedTokens} onclick={(elem) => alert("stake")} />
+            <Modal title="Stake $RealT" actionTxt="STAKE" description={"Select the $RealT you want to stake :"}
+              close={() => setShowStakeModal(false)} list={supportedTokens} 
+              onclick={onClickStake} />
           )}
           {ShowUnstakeModal && (
             <Modal title="Unstake $RealT" actionTxt="UNSTAKE" close={() => setShowUnstakeModal(false)} list={[]} onclick={(elem) => alert("unstake")} />

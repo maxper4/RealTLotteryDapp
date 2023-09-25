@@ -1,12 +1,20 @@
 import Cross from "../assets/cross.svg";
 import React, { useState } from "react";
 
-function Modal({title, actionTxt, close, list, onclick}) {
-  const [value, setValue] = useState("");
+function Modal({title, actionTxt, close, list, onclick, description}) {
+  const [value, setValue] = useState(list[0]);
+  const [amount, setAmount] = useState(0)
 
-  const handleChange = (event) => {
+  const handleChangeValue = (event) => {
     setValue(event.target.value);
   };
+
+  const handleChangeAmount = (e) => {
+    const newAmount = e.target.value;
+    if (newAmount >= 0) {
+      setAmount(newAmount);
+    }
+  }
 
   return (
     <div className="Modal StakeModal">
@@ -17,19 +25,25 @@ function Modal({title, actionTxt, close, list, onclick}) {
 
       <div className="inputWrap">
         <div>
-          <label>
-            <h2 className="tokenName">Enter the $RealT you want to stake :</h2>
-            <select value={value} onChange={handleChange} className="input">
-              {list.map((elem) => (
-                <option value={elem} className="options">
-                  {elem}
-                </option>
-              ))}
-            </select>
-          </label>
+          <h2 className="tokenName">{description}</h2>
+          <select value={value} onChange={handleChangeValue} className="input">
+            {list.map((elem) => (
+              <option value={elem} className="options">
+                {elem}
+              </option>
+            ))}
+          </select>
+          <input type="number" className="input" placeholder="Amount" min={0} value={amount} onChange={handleChangeAmount} />
         </div>
       </div>
-      <button className="btn-blue no-mg" onClick={() => onclick(value)}>{ actionTxt + value.toUpperCase()}</button>
+      {
+        amount > 0 && (
+          <button className="btn-blue no-mg" onClick={() => {onclick(value, amount);}}>{ actionTxt + " " + value.toUpperCase()}</button>
+        )
+        || (
+          <button className="btn-blue no-mg" disabled>{ actionTxt + " " + value.toUpperCase()}</button>
+        )
+      }
     </div>
   );
 }

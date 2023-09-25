@@ -188,7 +188,7 @@ function App() {
                   </div>
               )
             }
-          <Token />
+          <Token contract={contract} />
 
           <Lottery />
         </div>
