@@ -1,11 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import StakeModal from "./StakeModal";
+import Modal from "./Modal";
 
-function Token() {
+function Token({ contract }) {
   const [ShowStakeModal, setShowStakeModal] = useState(false);
   const [ShowUnstakeModal, setShowUnstakeModal] = useState(false);
   const [ShowEnterLotteryModal, setShowEnterLotteryModal] = useState(false);
+  const [supportedTokens, setSupportedTokens] = useState([]);
+
+  const loadSupportedTokens = async () => {
+    const supportedTokens = await contract.tokensSupported();
+    setSupportedTokens(supportedTokens);
+  };
+
+  useEffect(() => {
+
+    if (contract) {
+      loadSupportedTokens();
+    }
+  }, [contract]);
 
   return (
     <>
@@ -59,10 +72,10 @@ function Token() {
             </div>
           </div>
           {ShowStakeModal && (
-            <StakeModal close={() => setShowStakeModal(false)} />
+            <Modal title="Stake $RealT" actionTxt="STAKE" close={() => setShowStakeModal(false)} list={supportedTokens} onclick={(elem) => alert("stake")} />
           )}
           {ShowUnstakeModal && (
-            <StakeModal close={() => setShowUnstakeModal(false)} />
+            <Modal title="Unstake $RealT" actionTxt="UNSTAKE" close={() => setShowUnstakeModal(false)} list={[]} onclick={(elem) => alert("unstake")} />
           )}
         </div>
         <div className="wrap">
@@ -80,7 +93,7 @@ function Token() {
             </button>
           </div>
           {ShowEnterLotteryModal && (
-            <StakeModal close={() => setShowEnterLotteryModal(false)} />
+            <Modal title="Enter $RealT Lottery" actionTxt="ENTER" close={() => setShowEnterLotteryModal(false)} list={[]} onclick={(elem) => alert("enter")}/>
           )}
         </div>
       </section>
