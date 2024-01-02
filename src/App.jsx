@@ -9,7 +9,7 @@ import Token from "./components/Token";
 import Footer from "./components/Footer";
 import WalletButton from "./components/WalletButton";
 
-import { CONTRACT_ADDRESS, CHAIN_ID, CHAIN_ID_HEX } from "./config";
+import { CONTRACT_ADDRESS, CHAIN_ID, CHAIN_ID_HEX, CHAIN_ADD_INFOS_TESTNET } from "./config";
 import ABI from "./abis/RealtLottery.json";
 
 function App() {
@@ -114,6 +114,10 @@ function App() {
       }
     } catch(error) {
       console.log(error)
+      if(error.code === 4902)
+      {
+        await window.ethereum.request(CHAIN_ADD_INFOS_TESTNET);
+      }
     }
   }
 
