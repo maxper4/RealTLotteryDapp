@@ -1,36 +1,160 @@
 import React, { useEffect, useState } from "react";
+import { ethers } from 'ethers';
 
 import Modal from "./Modal";
 
-function Token({ contract }) {
+import TokenABI from "../abis/RealtToken.json";
+
+import { CONTRACT_ADDRESS } from "../config";
+
+function Token({ contract, account }) {
   const [ShowStakeModal, setShowStakeModal] = useState(false);
   const [ShowUnstakeModal, setShowUnstakeModal] = useState(false);
   const [ShowEnterLotteryModal, setShowEnterLotteryModal] = useState(false);
+
+  const [canStake, setCanStake] = useState(false);
+  const [canUnstake, setCanUnstake] = useState(false);
+  const [canEnterLottery, setCanEnterLottery] = useState(false);
+
   const [supportedTokens, setSupportedTokens] = useState([]);
+  const [tokensBalances, setTokensBalances] = useState({});
+  const [tokensAllowances, setTokensAllowances] = useState({});
+  const [ticketsBalance, setTicketsBalance] = useState(0);
+  const [ticketsIds, setTicketsIds] = useState([]);
+  const [ticketsInfos, setTicketsInfos] = useState({});
 
-  const loadSupportedTokens = async () => {
-    const supportedTokens = await contract.getTokensSupported();
-    setSupportedTokens(supportedTokens);
-  };
-
-  const checkApproved = async (elem) => {
-    // instantiate contract for $REALT
-    
-    // approve if not already done
-    return approved;
+  const checkApproved = async (elem, amount) => {
+    const approved = tokensAllowances[elem] >= amount;
+    if(!approved) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+      const tokenContract = new ethers.Contract(
+        elem,
+        TokenABI.abi,
+        signer
+      );
+      try {
+        await tokenContract.approve(CONTRACT_ADDRESS, amount);
+        amount = await tokenContract.allowance(account, CONTRACT_ADDRESS);
+        setTokensAllowances({...tokensAllowances, [elem]: amount});
+      }
+      catch(e) {
+        return false;
+      }
+    }
+    return true;
   };
 
   const onClickStake = async(elem, amount) => {
-    alert("stake " + elem + " x" + amount);
-    await checkApproved(elem);
-    await contract.enter([elem], [amount]); // TODO: /!\ $REALT are ERC20, not ERC721
+    if(await checkApproved(elem, amount)) {
+      await contract.enter([elem], [amount]);
+      let approval = tokensAllowances[elem] - amount;
+      setTokensAllowances({...tokensAllowances, [elem]: approval});
+    }
   };
+
+  const onClickUnstake = async(elem) => {
+    const ids = [];
+    for(let id of ticketsIds) {
+      const ticketInfo = ticketsInfos[id];
+      if(ticketInfo.token == elem) {
+        ids.push(id);
+      }
+    }
+
+    if(ids.length > 0)
+      await contract.exit(ids);
+    else
+      alert("no tickets to unstake");
+  };
+
+  const onClickEnter = async(elem) => {
+    const blockNumber = await provider.getBlockNumber();
+    const block = await provider.getBlock(blockNumber);
+    const timestamp = block.timestamp.toNumber();
+
+    const delay = (await contract.drawInterval()).toNumber();
+
+    const ids = [];
+    for(let id of ticketsIds) {
+      const ticketInfo = ticketsInfos[id];
+      if(timestamp >= ticketInfo.enteredAt.toNumber() + delay && ticketInfo.token == elem) {
+        ids.push(id);
+      }
+    }
+
+    if(ids.length > 0)
+      await contract.stack(ids);
+    else
+      alert("no tickets to enter");
+  };
+
+  const initFromContract = async () => {
+    const supportedTokens = await contract.getTokensSupported();
+    setSupportedTokens(supportedTokens);
+
+    const provider = new ethers.providers.Web3Provider(ethereum);
+    const signer = provider.getSigner();
+
+    const tokensBalances = {};
+    const tokensAllowances = {};
+    await Promise.all(supportedTokens.map(async (token) => {
+      const tokenContract = new ethers.Contract(
+        token,
+        TokenABI.abi,
+        signer
+      );
+      const balance = await tokenContract.balanceOf(account);
+      tokensBalances[token] = balance.toNumber();
+      const allowance = await tokenContract.allowance(account, CONTRACT_ADDRESS);
+      tokensAllowances[token] = allowance;
+    }));
+    setTokensBalances(tokensBalances);
+    setTokensAllowances(tokensAllowances);
+    
+    const ticketsBalance = (await contract.balanceOf(account)).toNumber();
+    setTicketsBalance(ticketsBalance);
+
+    const blockNumber = await provider.getBlockNumber();
+    const block = await provider.getBlock(blockNumber);
+    const timestamp = block.timestamp;
+
+    const delay = (await contract.drawInterval()).toNumber();
+
+    let ticketsIds = [];
+    let ticketsInfos = {};
+    for(let i = 0; i < ticketsBalance; i++) {
+      const ticket = await contract.tokenOfOwnerByIndex(account, i);
+      const ticketInfo = await contract.tickets(ticket);
+      if(timestamp >= ticketInfo.enteredAt.toNumber() + delay) {
+        setCanEnterLottery(true);
+      }
+      ticketsIds.push(ticket);
+      ticketsInfos[ticket] = ticketInfo;
+    }
+    setTicketsIds(ticketsIds);
+    setTicketsInfos(ticketsInfos);
+  }
 
   useEffect(() => {
     if (contract) {
-      loadSupportedTokens();
+      initFromContract();
     }
   }, [contract]);
+
+  useEffect(() => {
+    if (tokensBalances) {
+      const canStake = Object.values(tokensBalances).some(balance => balance > 0);
+      setCanStake(canStake);
+    }
+  }, [tokensBalances]);
+
+  useEffect(() => {
+    if (ticketsBalance) {
+      const canUnstake = ticketsBalance > 0;
+      setCanUnstake(canUnstake);
+    }
+  }, [ticketsBalance]);
 
   return (
     <>
@@ -72,24 +196,28 @@ function Token({ contract }) {
               <button
                 className="btn-blue"
                 onClick={() => { setShowStakeModal(true); setShowUnstakeModal(false); setShowEnterLotteryModal(false); }}
+                disabled={!canStake}
               >
                 STAKE $REALT
               </button>
               <button
                 className="btn-blue"
                 onClick={() => {setShowUnstakeModal(true); setShowStakeModal(false); setShowEnterLotteryModal(false);}}
+                disabled={!canUnstake}
               >
                 UNSTAKE $REALT
               </button>
             </div>
           </div>
-          {ShowStakeModal && (
+          {ShowStakeModal && ( // TODO: list with name not addresses, show tokens amount with decimals
             <Modal title="Stake $RealT" actionTxt="STAKE" description={"Select the $RealT you want to stake :"}
               close={() => setShowStakeModal(false)} list={supportedTokens} 
               onclick={onClickStake} />
           )}
           {ShowUnstakeModal && (
-            <Modal title="Unstake $RealT" actionTxt="UNSTAKE" close={() => setShowUnstakeModal(false)} list={[]} onclick={(elem) => alert("unstake")} />
+            <Modal title="Unstake $RealT" actionTxt="UNSTAKE" 
+            close={() => setShowUnstakeModal(false)} list={[]} 
+            onclick={onClickUnstake} />
           )}
         </div>
         <div className="wrap">
@@ -102,12 +230,15 @@ function Token({ contract }) {
             <button
               className="btn-blue"
               onClick={() => {setShowEnterLotteryModal(true); setShowStakeModal(false); setShowUnstakeModal(false);} }
+              disabled={!canEnterLottery}
             >
               ENTER LOTTERY
             </button>
           </div>
           {ShowEnterLotteryModal && (
-            <Modal title="Enter $RealT Lottery" actionTxt="ENTER" close={() => setShowEnterLotteryModal(false)} list={[]} onclick={(elem) => alert("enter")}/>
+            <Modal title="Enter $RealT Lottery" actionTxt="ENTER" 
+            close={() => setShowEnterLotteryModal(false)} list={[]} 
+            onclick={onClickEnter}/>
           )}
         </div>
       </section>

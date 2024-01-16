@@ -10,7 +10,7 @@ import Footer from "./components/Footer";
 import WalletButton from "./components/WalletButton";
 
 import { CONTRACT_ADDRESS, CHAIN_ID, CHAIN_ID_HEX, CHAIN_ADD_INFOS_TESTNET } from "./config";
-import ABI from "./abis/RealtLottery.json";
+import LotteryABI from "./abis/RealtLottery.json";
 
 function App() {
   const [correctChain, setCorrectChain] = useState(false)
@@ -30,7 +30,7 @@ function App() {
       const signer = provider.getSigner();
       const contract = new ethers.Contract(
           CONTRACT_ADDRESS,
-          ABI.abi,
+          LotteryABI.abi,
           signer
       );
   
@@ -106,7 +106,6 @@ function App() {
     try { 
       if (window.ethereum.networkVersion !== CHAIN_ID) {
         await ethereum.request({ method: 'wallet_switchEthereumChain', params:[{chainId: CHAIN_ID_HEX}]});
-        console.log("Please connect to Goerli !")
       }
       else if(!correctChain)
       {
@@ -121,23 +120,6 @@ function App() {
     }
   }
 
-  useEffect(() => {
-    if(contract)
-    {
-      /*contract.on("NewTweet", onNewTweet);
-      contract.on("TweetDeleted", onDeleteTweet);
-      contract.on("TweetLiked", onTweetLiked);
-      contract.on("TweetUnliked", onTweetUnliked);
-  
-      return () => {
-        contract.off("NewTweet", onNewTweet);
-        contract.off("TweetDeleted", onDeleteTweet);
-        contract.off("TweetLiked", onTweetLiked);
-        contract.off("TweetUnliked", onTweetUnliked);
-      }*/
-    }
-  }, [contract]);
-  
   useEffect(() => {
     if(account != null && correctChain) {
       loadContract();
@@ -192,9 +174,9 @@ function App() {
                   </div>
               )
             }
-          <Token contract={contract} />
+          <Token contract={contract} account={account} />
 
-          <Lottery />
+          <Lottery contract={contract} />
         </div>
         <Footer />
       </div>

@@ -21,7 +21,6 @@ p {
 }
 
 h1 {
-  text-align: start;
   color: #f2a91e;
 }
 
@@ -277,6 +276,7 @@ section {
 
 .list-links {
   display: flex;
+  justify-content: center;
 }
 
 @media (min-width: 1024px) {

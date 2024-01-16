@@ -27,8 +27,8 @@ function Modal({title, actionTxt, close, list, onclick, description}) {
         <div>
           <h2 className="tokenName">{description}</h2>
           <select value={value} onChange={handleChangeValue} className="input">
-            {list.map((elem) => (
-              <option value={elem} className="options">
+            {list.map((elem, i) => (
+              <option key={"mod-"+ title + "-" + i} value={elem} className="options">
                 {elem}
               </option>
             ))}
